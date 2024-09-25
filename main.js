@@ -12,12 +12,15 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 let lastScrollTop = 0;
 const navbar = document.getElementById("navbar");
 
+// Get the full height of the navbar and set it dynamically
+const navbarHeight = navbar.offsetHeight;
+
 window.addEventListener("scroll", function() {
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
     if (currentScroll > lastScrollTop) {
-        // Scroll down - hide navbar
-        navbar.style.top = "-100px"; // Adjust to be off-screen
+        // Scroll down - hide navbar completely by using its height
+        navbar.style.top = `-${navbarHeight}px`;  // Adjust to move off-screen completely
     } else {
         // Scroll up - show navbar
         navbar.style.top = "0";
@@ -25,6 +28,7 @@ window.addEventListener("scroll", function() {
 
     lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
 });
+
 
 // Fade-in effect for sections when scrolling
 const sections = document.querySelectorAll('section');
