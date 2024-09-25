@@ -1,4 +1,3 @@
-/* Root Styles */
 :root {
     --primary-color: #AA9B70;
     --secondary-color: #FAF7F0;
@@ -7,7 +6,6 @@
     --accent-color: #967E48;
 }
 
-/* Global Styles */
 body, html {
     font-family: 'Poppins', sans-serif;
     margin: 0;
@@ -26,7 +24,6 @@ p {
     line-height: 1.8;
 }
 
-/* Navbar */
 nav {
     background-color: var(--secondary-color);
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
@@ -61,7 +58,6 @@ nav ul li a:hover {
     color: white;
 }
 
-/* Header */
 header {
     background-size: cover;
     text-align: center;
@@ -82,7 +78,19 @@ header p {
     margin: 0 auto;
 }
 
-/* Section Styles */
+/* js */
+header {
+    opacity: 0;
+    transform: translateY(-20px); /* Header slides down slightly */
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+header.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
 section {
     margin: 40px auto;
     padding: 40px;
@@ -108,11 +116,22 @@ section hr {
     height: 2px;
     background-color: var(--primary-color);
     width: 50px;
-    /* margin: 20px auto; */
     margin-top: 20px;
 }
 
-/* Footer */
+/* js */
+section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+section.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
 footer {
     background-color: var(--primary-color);
     color: white;
@@ -123,10 +142,20 @@ footer {
 footer h2 {
     font-size: 2rem;
     margin-bottom: 20px;
+    color: white;
 }
 
 footer p {
     font-size: 1.1rem;
+    color: white;
+}
+
+footer a{
+    margin: 0 10px;
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
 }
 
 .hometown-image, .food-images, .tourist-images{
@@ -138,7 +167,6 @@ footer p {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Profile Header */
 .profile-header {
     text-align: center;
     padding: 50px 20px;
@@ -168,7 +196,6 @@ footer p {
     margin-bottom: 20px;
 }
 
-/* Social Links */
 .social-links a {
     margin: 0 10px;
     color: white;
@@ -181,7 +208,6 @@ footer p {
     color: var(--secondary-color);
 }
 
-/* Profile Content */
 .profile-content {
     max-width: 1000px;
     margin: 40px auto;
@@ -208,7 +234,18 @@ footer p {
     line-height: 1.8;
 }
 
-/* Responsive Styles */
+.profile-content ul{
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-content ul li{
+    list-style: none;
+    font-size: 1.2rem;
+
+}
+
 @media (max-width: 768px) {
     nav ul {
         flex-direction: column;
