@@ -11,18 +11,22 @@ let lastScrollTop = 0;
 const navbar = document.getElementById("navbar");
 
 const navbarHeight = navbar.offsetHeight;
+let isScrolling;
 
 window.addEventListener("scroll", function() {
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (currentScroll > lastScrollTop) {
-        navbar.style.top = `-${navbarHeight}px`;  
-    } else {
-        navbar.style.top = "0";
-    }
+    window.clearTimeout(isScrolling);
 
-    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; 
+    navbar.style.top = `-${navbarHeight}px`;  
+
+    isScrolling = setTimeout(function() {
+        navbar.style.top = "0"; 
+    }, 500);  
+
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
 });
+
 
 
 const sections = document.querySelectorAll('section');
