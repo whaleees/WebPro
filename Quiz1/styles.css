@@ -42,8 +42,6 @@ nav ul {
     list-style: none;
     display: flex;
     justify-content: space-around;
-    /* margin: 0;
-    padding: 0; */
 }
 
 nav ul li {
@@ -103,6 +101,15 @@ section h2 {
 section p {
     font-size: 1.2rem;
     text-align: center;
+}
+
+section hr {
+    border: none;
+    height: 2px;
+    background-color: var(--primary-color);
+    width: 50px;
+    /* margin: 20px auto; */
+    margin-top: 20px;
 }
 
 /* Footer */
@@ -199,14 +206,6 @@ footer p {
 .profile-content section p {
     font-size: 1.2rem;
     line-height: 1.8;
-}
-
-.profile-content section hr {
-    border: none;
-    height: 2px;
-    background-color: var(--primary-color);
-    width: 50px;
-    margin: 20px auto;
 }
 
 /* Responsive Styles */
