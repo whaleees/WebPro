@@ -278,6 +278,9 @@ section button {
 }
 
 @media (max-width: 768px) {
+    nav{
+        height: 60px;
+    }
     nav ul {
         flex-direction: column;
     }
