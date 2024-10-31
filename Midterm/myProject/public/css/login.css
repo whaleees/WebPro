@@ -1,0 +1,78 @@
+/* Basic Page Layout */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #F4F2EE; /* Light Beige */
+    color: #333; /* Dark text */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Login Box Styling */
+.login-box {
+    background-color: #FFFFFF; /* White for contrast */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 320px;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #8B6F43; /* Darker shade from your theme */
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #E0DCCD;
+    border-radius: 5px;
+    background-color: #F9F6F1; /* Soft background for input fields */
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #8B6F43; /* Darker shade for the button */
+    border: none;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #A27D57; /* Lighter hover effect */
+}
+
+a {
+    text-decoration: none;
+    color: #8B6F43; /* Link color */
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #A27D57;
+}
+
+.errors ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    color: #D9534F; /* Error text color */
+}
