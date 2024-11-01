@@ -9,107 +9,144 @@ use Illuminate\Support\Facades\Auth;
 
 class PostsController extends Controller
 {
-    
-    public function create(){
+    // Show the post creation form
+    public function create()
+    {
         return view('posts.create');
     }
-    
+
+    // Store a newly created post in the database
     public function store(Request $request)
     {
-        // Validate the form data
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Ensure it’s an image file
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-    
-        // Handle the image upload
+
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imageFile = $request->file('image');
-            
-            // Save the image in the 'public/uploads' directory
-            $imagePath = $imageFile->store('uploads', 'public');
+            $imagePath = $request->file('image')->store('uploads', 'public');
         }
-    
-        // Create a new post
+
         $post = new Posts();
         $post->title = $request->input('title');
         $post->content = $request->input('content');
-        $post->image = $imagePath; // Save the image path in the database
-        $post->user_id = Auth::id(); // Assuming the user is authenticated
-    
-        // Save the post to the database
+        $post->image = $imagePath;
+        $post->user_id = Auth::id();
         $post->save();
-    
-        // Redirect back with a success message
+
         return redirect()->route('home')->with('success', 'Post created successfully!');
     }
-    
-    
-    
+
+    // Display a list of posts with user data
     public function display()
-{
-    $posts = Posts::with('user')->get();  // Eager load the user relationship
-    return view('posts.display', ['posts' => $posts]);
-}
+    {
+        $posts = Posts::with('user')->get();  // Eager load the user relationship
+        return view('posts.display', ['posts' => $posts]);
+    }
 
-public function searchUsers(Request $request)
-{
-    $query = $request->input('query');
+    // Show a single post by its ID
+    public function show($id)
+    {
+        $post = Posts::findOrFail($id);
+        return view('posts.show', compact('post'));
+    }
 
-    // Search for users by name or email
-    $users = User::where('name', 'LIKE', "%{$query}%")
-                 ->orWhere('email', 'LIKE', "%{$query}%")
-                 ->get()
-                 ->map(function ($user) {
-                     return [
-                         'name' => $user->name,
-                         'email' => $user->email,
-                         'profile_image' => $user->profile_image ?? 'default-avatar.png',
-                         'username' => $user->name, // Use 'username' if you have this field in the database
-                     ];
-                 });
+    // Search for users based on query input
+    public function searchUsers(Request $request)
+    {
+        $query = $request->input('query');
 
-    // Return only user results in the JSON response
-    return response()->json($users);
-}
+        $users = User::where('name', 'LIKE', "%{$query}%")
+                     ->orWhere('email', 'LIKE', "%{$query}%")
+                     ->get()
+                     ->map(function ($user) {
+                         return [
+                             'name' => $user->name,
+                             'email' => $user->email,
+                             'profile_image' => $user->profile_image ?? 'default-avatar.png',
+                             'username' => $user->name,
+                         ];
+                     });
 
-public function likePost(Request $request)
-{
-    $post = Posts::find($request->post_id);
+        return response()->json($users);
+    }
 
-    // Use the user ID directly
-    $userId = Auth::id();
+    // Get comments for a specific post
+    public function getComments($postId)
+    {
+        $post = Posts::find($postId);
+        $comments = $post->comments()->with('user')->get();
 
-    // Check if the user has already liked the post
-    if ($post->likes()->where('user_id', $userId)->exists()) {
-        // If user has already liked, remove like (toggle unlike)
-        $post->likes()->where('user_id', $userId)->delete();
-    } else {
-        // Otherwise, add a new like
-        $post->likes()->create([
-            'user_id' => $userId,
+        return response()->json($comments);
+    }
+
+    // Add or remove a like for a specific post
+    public function addLike(Posts $post)
+    {
+        $user = Auth::user();
+        $liked = $post->likes()->where('user_id', $user->id)->exists();
+
+        if ($liked) {
+            $post->likes()->where('user_id', $user->id)->delete();
+            $post->decrement('likes_count');
+        } else {
+            $post->likes()->create(['user_id' => $user->id]);
+            $post->increment('likes_count');
+        }
+
+        // return response()->json(['likes_count' => $post->likes()->count()]);
+        return response()->json([
+            'likes_count' => $post->likes()->count(),
+            'liked' => !$liked
         ]);
     }
 
-    // Return the updated like count
-    return response()->json(['likes_count' => $post->likes()->count()]);
-}
+    // Add a comment to a specific post
+    public function addComment(Request $request, Posts $post)
+    {
+        $request->validate([
+            'content' => 'required|string|max:255',
+        ]);
+    
+        $comment = $post->comments()->create([
+            'user_id' => Auth::id(),
+            'content' => $request->input('content'),
+            $post->increment('comments_count')
+        ]);
+    
+        return response()->json([
+            'comments_count' => $post->comments()->count(),
+            'new_comment' => [
+                'user' => ['name' => $comment->user->name],
+                'content' => $comment->content,
+            ]
+        ]);
+    }
+    
+    public function showJson($id)
+    {
+        $post = Posts::with('user', 'comments.user')->findOrFail($id);
 
-public function getComments($postId)
-{
-    $post = Posts::find($postId);
-    $comments = $post->comments()->with('user')->get();
-
-    return response()->json($comments);
-}
-
-public function show($id)
-{
-    $posts = Posts::findOrFail($id); // Ensure the post exists
-    return view('posts.show', compact('posts')); // Pass post data to the view
-}
-
+        return response()->json([
+            'image' => $post->image,
+            'caption' => $post->content,
+            'likes_count' => $post->likes()->count(),
+            'user' => [
+                'name' => $post->user->name,
+                'avatar' => $post->user->profile_image,
+            ],
+            'comments' => $post->comments->map(function ($comment) {
+                return [
+                    'content' => $comment->content,
+                    'user' => [
+                        'name' => $comment->user->name,
+                    ],
+                ];
+            }),
+        ]);
+    }
+    
 
 }

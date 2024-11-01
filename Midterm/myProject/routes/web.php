@@ -32,9 +32,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/posts/allposts', [PostsController::class, 'display'])->name('posts.display');
 Route::get('/posts/{id}', [PostsController::class, 'show'])->name('posts.show');
 
-Route::post('/posts/{post}/like', [LikeController::class, 'toggleLike'])->name('posts.like')->middleware('auth');
-Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comment')->middleware('auth');
-Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+
 
 Route::get('/profile', function () {
     $user = Auth::user();  // Get the authenticated user
@@ -49,6 +47,11 @@ Route::get('/comments/{postId}', [PostsController::class, 'getComments'])->name(
 Route::get('/search-users', [HomeController::class, 'searchUsers']);
 Route::get('/search-users', [PostsController::class, 'searchUsers']);
 Route::get('/search-users', [ProfileController::class, 'searchUsers']);
+
+Route::post('/posts/{post}/like', [PostsController::class, 'addLike'])->name('posts.like')->middleware('auth');
+Route::post('/posts/{post}/comments', [PostsController::class, 'addComment'])->name('posts.comment')->middleware('auth');
+Route::get('/posts/{id}/json', [PostsController::class, 'showJson'])->name('posts.showJson');
+
 
 
 

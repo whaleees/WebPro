@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeSearch = document.getElementById('close-search');
     const searchBar = document.getElementById('search-bar');
     const searchButton = document.getElementById('search-btn');
+    const likeableImages = document.querySelectorAll('.likeable-image');
 
     // Attach event listeners
     likeButtons.forEach(button => button.addEventListener('click', handleLikeButtonClick));
@@ -13,31 +14,123 @@ document.addEventListener("DOMContentLoaded", function () {
     searchButton.addEventListener('click', toggleSearchBar);
     searchInput.addEventListener('keyup', handleSearchInput);
     closeSearch.addEventListener('click', closeSearchBar);
+    document.querySelectorAll('.comment-input').forEach(input => {
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevents the form from actually submitting
+                handleCommentSubmit(this); // Call the function to handle the comment
+            }
+        });
+    });
+    likeableImages.forEach(image => {
+        image.addEventListener('dblclick', handleImageDoubleClick);
+    });
 
-    // Function to handle like button click
+    // Like button click handler
     function handleLikeButtonClick() {
-        const postId = this.dataset.postId;
-        fetch(`/like-post`, {
+        // console.log("Like button clicked!!!!");
+        const postId = this.getAttribute('data-post-id');
+        fetch(`/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // console.log(data);
+            // Update the likes count
+            document.querySelector(`#like-count-${postId}`).textContent = `${data.likes_count}`;
+            // Toggle 'liked' class for styling
+            if (data.liked) {
+                this.classList.add('liked');
+            } else {
+                this.classList.remove('liked');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function handleImageDoubleClick(event) {
+        const postId = event.target.getAttribute('data-post-id');
+        likePost(postId);  // Call the like function with the post ID
+    }
+
+    function likePost(postId) {
+        fetch(`/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update the likes count
+            const likeCountElement = document.querySelector(`#like-count-${postId}`);
+            if (likeCountElement) {
+                likeCountElement.textContent = `${data.likes_count}`;
+            }
+
+            // Optionally add a visual feedback like a quick animation (optional)
+            const image = document.querySelector(`.likeable-image[data-post-id="${postId}"]`);
+            image.classList.add('liked-animation');
+            setTimeout(() => {
+                image.classList.remove('liked-animation');
+            }, 500);
+
+            // Toggle like icon state
+            const likeIcon = document.querySelector(`#like-icon-${postId}`);
+            if (likeIcon) {
+                likeIcon.classList.toggle('liked');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    // Comment button click handler
+    function handleCommentButtonClick() {
+        const postId = this.getAttribute('data-post-id');
+        const commentInput = document.querySelector(`.comment-input[data-post-id="${postId}"]`);
+        
+        // Focus on the comment input field
+        if (commentInput) {
+            commentInput.focus();
+        }
+    }
+
+    function handleCommentSubmit(inputElement) {
+        const postId = inputElement.getAttribute('data-post-id');
+        const content = inputElement.value.trim();
+    
+        if (content === '') return;
+    
+        fetch(`/posts/${postId}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({ post_id: postId })
+            body: JSON.stringify({ content })
         })
         .then(response => response.json())
         .then(data => {
-            document.querySelector(`#like-count-${postId}`).textContent = `${data.likes_count} likes`;
+            // console.log('Server response:', data); // Check server response here
+    
+            const commentCountElement = document.querySelector(`#comment-count-${postId}`);
+            if (commentCountElement) {
+                commentCountElement.textContent = `${data.comments_count}`; // Update comment count
+            } else {
+                console.error(`Element with ID #comment-count-${postId} not found.`);
+            }
+    
+            inputElement.value = ''; // Clear the input
         })
         .catch(error => console.error('Error:', error));
     }
 
-    // Function to handle comment button click
-    function handleCommentButtonClick() {
-        const postId = this.dataset.postId;
-        const commentSection = document.querySelector(`#comments-${postId}`);
-        commentSection.style.display = commentSection.style.display === 'none' || commentSection.style.display === '' ? 'block' : 'none';
-    }
+
 
     // Toggle search bar visibility
     function toggleSearchBar() {
@@ -101,33 +194,52 @@ document.addEventListener("DOMContentLoaded", function () {
         searchInput.value = '';
     }
 
-    // Helper function to create a post element
-    function createPostElement(post) {
-        const postElement = document.createElement('div');
-        postElement.classList.add('post');
-        postElement.innerHTML = `
-            <div class="post-header">
-                <img class="post-avatar" src="/storage/avatars/default-avatar.png" alt="Profile Image">
-                <div class="post-user-info">
-                    <a href="/profile/${post.user ? post.user.username : ''}">
-                        <strong>${post.user ? post.user.name : 'Unknown User'}</strong>
-                    </a>
-                    <p>${new Date(post.created_at).toLocaleDateString()}</p>
-                </div>
-            </div>
-            <div class="post-image">
-                <img src="/storage/${post.image}" alt="${post.title}">
-            </div>
-            <div class="post-footer">
-                <p><strong>${post.user ? post.user.name : 'Unknown User'}</strong> ${post.content}</p>
-                <p>${post.likes_count ?? 0} Likes</p>
-                <p>${post.comments_count ?? 0} Comments</p>
-                <form action="{{ route('comments.store', $post->id) }}" method="POST">
-                    @csrf
-                    <input type="text" placeholder="Add a comment..." name="content" class="comment-input">
-                </form>
-            </div>
-        `;
-        return postElement;
-    }
+        document.querySelectorAll(".comment").forEach(function (element) {
+            element.addEventListener("click", function () {
+                const postId = this.getAttribute("data-post-id");
+                openModal(postId);
+            });
+        });
+    
+        document.querySelector(".close").addEventListener("click", function() {
+            // console.log("close brooow");
+            document.getElementById("postModal").style.display = "none";
+        });
+        
+        document.getElementById("postModal").onclick = function(event) {
+            // console.log("close brooow");
+            if (event.target === document.getElementById("postModal")) {
+                document.getElementById("postModal").style.display = "none";
+            }
+        };
+    
+        function openModal(postId) {
+            console.log("Opening modal for post", postId);
+            fetch(`/posts/${postId}/json`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate modal with data
+                    // console.log(data.user.name);
+                    document.getElementById("modalImage").src = `/storage/${data.image}`;
+                    document.getElementById("modalUserName").textContent = data.user.name;
+                    document.getElementById("modalUserNameLink").href = `/profile/${data.user.name}`;
+                    document.getElementById("modalCaption").textContent = data.caption;
+                    document.getElementById("modalLikes").textContent = `${data.likes_count} likes`;
+    
+            
+        
+                    // Populate comments
+                    const modalComments = document.getElementById("modalComments");
+                    modalComments.innerHTML = ""; // Clear previous comments
+                    data.comments.forEach(comment => {
+                        const commentElement = document.createElement("p");
+                        commentElement.textContent = `${comment.user.name}: ${comment.content}`;
+                        modalComments.appendChild(commentElement);
+                    });
+        
+                    // Display modal
+                    document.getElementById("postModal").style.display = "flex";
+                })
+                .catch(error => console.error("Error loading post data:", error));
+        }
 });

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Posts; // Assuming your Post model is called Post
+use App\Models\Posts; 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {

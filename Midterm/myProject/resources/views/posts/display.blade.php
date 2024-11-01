@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ asset('/css/display-posts.css') }}">
-    <script src="{{ asset('/js/main-post.js') }}"></script>
+    <script defer src="{{ asset('/js/main-post.js') }}"></script>
     <title>All Posts</title>
 </head>
 <body>
@@ -42,8 +42,8 @@
         @else
             <div class="grid">
                 @foreach ($posts as $post)
-                <div class="grid-item">
-                    <div class="post-title">{{ $post->title }}</div>
+                <div class="grid-item" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')">
+                    <!-- <div class="post-title">{{ $post->title }}</div> -->
                     
                     @if($post->image)
                         <div class="post-image">
@@ -53,7 +53,7 @@
                         </div>
                     @endif
                     
-                    <div class="post-content">{{ $post->content }}</div>
+                    <!-- <div class="post-content">{{ $post->content }}</div> -->
                 </div>
 
                 @endforeach
@@ -61,13 +61,35 @@
         @endif
     </div>
 
-    <!-- Modal for post details -->
-    <div class="modal" id="postModal" style="display:none;">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modal-post-content"></div>
+<!-- Modal for post details -->
+<div class="modal" id="postModal" style="display:none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="modal-left">
+            <img id="modalImage" src="" alt="Post Image">
+        </div>
+        <div class="modal-right">
+            <div class="post-details">
+                <div class="post-user">
+                    <img src="{{ asset('/storage/avatars/' . ($user->profile_image ?? 'default-avatar.png')) }}" alt="Profile Image" class="user-avatar-modal">
+                    <a href="#" id="modalUserNameLink">
+                        <span id="modalUserName"></span>
+                    </a>
+                </div>
+            </div>
+            <p id="modalCaption" class="modal-caption"></p>
+            <p id="modalLikes" class="modal-likes"></p>
+            <div id="modalComments" class="modal-comments"></div>
+            <form id="modalCommentForm" class="modal-comment-form">
+                <input type="text" placeholder="Add a comment..." id="modalCommentInput">
+                <button type="submit">Post</button>
+            </form>
+            </div>
         </div>
     </div>
+</div>
+
+
 
 </body>
 </html>
