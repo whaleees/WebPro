@@ -369,3 +369,157 @@ body {
     gap: 20px;
     margin-top: 20px;
 }
+
+/* Modal container */
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+}
+
+/* Modal content layout */
+.modal-content {
+    display: flex;
+    flex-direction: row;
+    max-width: 90vw; /* Limit to viewport width */
+    max-height: 90vh; /* Limit to viewport height */
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Close button */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Left section - Image */
+.modal-left {
+    flex: 1;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-left img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Right section - Content */
+.modal-right {
+    padding: 20px;
+    overflow-y: auto;
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Header section */
+.modal-header {
+    display: flex;
+    align-items: center; /* Center the items vertically */
+    margin-bottom: 10px;
+}
+
+.user-avatar-modal {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover; /* Ensures the image fills the circle */
+}
+
+#modalUserName {
+    position: relative;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #000; /* Ensures color matches */
+    bottom: 12px;
+}
+
+#modalUserNameLink {
+    bottom: 20px;
+    line-height: 40px;
+    text-decoration: none;
+    color: #000;
+}
+
+/* Caption and likes */
+.modal-caption {
+    font-size: 14px;
+    margin: 15px 0;
+}
+
+.modal-likes {
+    font-weight: bold;
+    color: gray;
+    margin-bottom: 10px;
+}
+
+/* Comments section */
+.modal-comments {
+    flex-grow: 1;
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+    overflow-y: auto;
+}
+
+.modal-comments p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.modal-comments strong {
+    font-weight: bold;
+}
+
+/* Comment form */
+.modal-comment-form {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.modal-comment-form input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.modal-comment-form button {
+    padding: 8px 12px;
+    background-color: #0095f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-comment-form button:hover {
+    background-color: #007bb5;
+}

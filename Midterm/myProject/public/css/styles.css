@@ -490,3 +490,14 @@ body {
     cursor: pointer;
     text-decoration: none;
 }
+
+.icon-like-button {
+    font-size: 24px;
+    cursor: pointer;
+    color: black; /* Default color */
+    transition: color 0.3s; /* Smooth transition */
+}
+
+.icon-like-button.liked {
+    color: pink; /* Pink color when liked */
+}

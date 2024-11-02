@@ -61,35 +61,32 @@
         @endif
     </div>
 
-<!-- Modal for post details -->
-<div class="modal" id="postModal" style="display:none;">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <div class="modal-left">
-            <img id="modalImage" src="" alt="Post Image">
-        </div>
-        <div class="modal-right">
-            <div class="post-details">
-                <div class="post-user">
-                    <img src="{{ asset('/storage/avatars/' . ($user->profile_image ?? 'default-avatar.png')) }}" alt="Profile Image" class="user-avatar-modal">
-                    <a href="#" id="modalUserNameLink">
-                        <span id="modalUserName"></span>
-                    </a>
-                </div>
+    <!-- Modal for post details -->
+    <div class="modal" id="postModal" style="display:none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-left">
+                <img id="modalImage" src="" alt="Post Image">
             </div>
-            <p id="modalCaption" class="modal-caption"></p>
-            <p id="modalLikes" class="modal-likes"></p>
-            <div id="modalComments" class="modal-comments"></div>
-            <form id="modalCommentForm" class="modal-comment-form">
-                <input type="text" placeholder="Add a comment..." id="modalCommentInput">
-                <button type="submit">Post</button>
-            </form>
+            <div class="modal-right">
+                <div class="post-details">
+                    <div class="post-user">
+                        <img src="{{ asset('/storage/avatars/' . ($user->profile_image ?? 'default-avatar.png')) }}" alt="Profile Image" class="user-avatar-modal">
+                        <a href="#" id="modalUserNameLink">
+                            <span id="modalUserName"></span>
+                        </a>
+                    </div>
+                </div>
+                <p id="modalCaption" class="modal-caption"></p>
+                <p id="modalLikes" class="modal-likes"></p>
+                <div id="modalComments" class="modal-comments"></div>
+                <form id="modalCommentForm" class="modal-comment-form">
+                    <input type="text" placeholder="Add a comment..." id="modalCommentInput">
+                    <button type="submit">Post</button>
+                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
-
 </body>
 </html>

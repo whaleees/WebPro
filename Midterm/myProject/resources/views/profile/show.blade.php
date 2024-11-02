@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile - Instagram Clone</title>
-    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
-    <script defer src="{{ asset('js/main-post.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('/css/profile.css') }}">
+    <script defer src="{{ asset('/js/main-profile.js') }}"></script>
 </head>
 <body>
     <div class="container">
@@ -73,7 +73,7 @@
                 <!-- Display Posts Grid -->
                 <div class="posts-grid">
                 @foreach($user->posts as $post)
-                    <div class="post">
+                    <div class="post" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')">
                         <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" class="post-thumbnail">
                         <div class="post-overlay">
                             <div class="post-info">
@@ -85,6 +85,34 @@
                 @endforeach
             </div>
             @endif
+        </div>
+    </div>
+
+    <!-- Modal for post details -->
+    <div class="modal" id="postModal" style="display:none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-left">
+                <img id="modalImage" src="" alt="Post Image">
+            </div>
+            <div class="modal-right">
+                <div class="post-details">
+                    <div class="post-user">
+                        <img src="{{ asset('/storage/avatars/' . ($user->profile_image ?? 'default-avatar.png')) }}" alt="Profile Image" class="user-avatar-modal">
+                        <a href="#" id="modalUserNameLink">
+                            <span id="modalUserName"></span>
+                        </a>
+                    </div>
+                </div>
+                <p id="modalCaption" class="modal-caption"></p>
+                <p id="modalLikes" class="modal-likes"></p>
+                <div id="modalComments" class="modal-comments"></div>
+                <form id="modalCommentForm" class="modal-comment-form">
+                    <input type="text" placeholder="Add a comment..." id="modalCommentInput">
+                    <button type="submit">Post</button>
+                </form>
+                </div>
+            </div>
         </div>
     </div>
 </body>
