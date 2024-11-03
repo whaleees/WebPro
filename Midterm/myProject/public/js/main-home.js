@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchBar = document.getElementById('search-bar');
     const searchButton = document.getElementById('search-btn');
     const likeableImages = document.querySelectorAll('.likeable-image');
+    const currentPage = window.location.pathname.split('/').pop();
 
     // Attach event listeners
     likeButtons.forEach(button => button.addEventListener('click', handleLikeButtonClick));
@@ -24,6 +25,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     likeableImages.forEach(image => {
         image.addEventListener('dblclick', handleImageDoubleClick);
+    });
+
+    document.querySelectorAll('.nav-list li').forEach(item => {
+        const page = item.getAttribute('data-page');
+        if (currentPage.includes(page)) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
     });
 
     // Like button click handler
