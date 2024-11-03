@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('/css/profile.css') }}">
     <script defer src="{{ asset('/js/main-profile.js') }}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">

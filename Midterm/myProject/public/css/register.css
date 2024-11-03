@@ -1,78 +1,104 @@
 /* Basic Page Layout */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #F4F2EE; /* Light Beige */
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb; /* Very Light Gray */
     color: #333; /* Dark text */
     margin: 0;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
 
+/* Wrapper for Full Centering */
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Centered Container */
 .container {
-    background-color: #FFFFFF; /* White for contrast */
+    background-color: #ffffff; /* White background for contrast */
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 320px;
+    width: 100%;
+    max-width: 450px;
+    box-sizing: border-box;
 }
 
 h1 {
     font-size: 24px;
     margin-bottom: 20px;
-    color: #8B6F43; /* Darker shade from your theme */
+    color: #5a5a5a; /* Neutral Gray for the header */
 }
 
 label {
     display: block;
     margin-bottom: 10px;
     font-size: 14px;
-    color: #8B6F43;
+    color: #5a5a5a; /* Neutral Gray for labels */
 }
 
+/* Form Inputs */
 input[type="text"],
 input[type="email"],
 input[type="password"] {
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #E0DCCD;
     border-radius: 5px;
-    background-color: #F9F6F1; /* Soft background for input fields */
     font-size: 14px;
+    border: 1px solid #d1d5db; /* Light Gray border */
+    background-color: #f3f4f6; /* Very Light Gray input background */
+    color: #5a5a5a; /* Neutral Gray text */
+    box-sizing: border-box;
 }
 
+/* Submit Button */
 button {
     width: 100%;
     padding: 10px;
-    background-color: #8B6F43; /* Darker shade for the button */
+    background-color: #a3a3a3; /* Soft Gray for the button */
     border: none;
     color: white;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    box-sizing: border-box;
 }
 
 button:hover {
-    background-color: #A27D57; /* Lighter hover effect */
+    background-color: #8b8b8b; /* Darker Gray on hover */
 }
 
+/* Error Messages */
 .errors ul {
     list-style: none;
     padding: 0;
     margin: 15px 0;
-    color: #D9534F; /* Error text color */
+    color: #d9534f; /* Red for error messages */
 }
 
+/* Links */
 a {
     text-decoration: none;
-    color: #8B6F43; /* Link color */
+    color: #5a5a5a; /* Neutral Gray for links */
+    font-size: 14px;
 }
 
 a:hover {
     text-decoration: underline;
-    color: #A27D57;
+    color: #8b8b8b; /* Darker gray on hover */
+}
+
+/* Additional Spacing for Bottom Link */
+.bottom-link {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #5a5a5a;
 }

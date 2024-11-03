@@ -1,25 +1,38 @@
+/* Global Reset */
 * {
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #fafafa;
+    background-color: #f3f4f6;
+    color: #333;
     display: flex;
     height: 100vh;
     margin: 0;
 }
 
+/* Layout Container */
 .container {
     display: flex;
     width: 100%;
 }
 
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #FFF;
+}
+
+
+/* Sidebar */
 .sidebar {
     width: 250px;
-    background-color: #E6C49F; /* Gold Sand Color */
+    background-color: #f1f5f9; 
+    color: #1e293b;
     height: 100vh;
     padding: 20px;
     display: flex;
@@ -41,6 +54,7 @@ body {
     width: 60px;
 }
 
+/* Navigation */
 .nav-list {
     list-style: none;
     width: 100%;
@@ -57,7 +71,7 @@ body {
 }
 
 .nav-list a {
-    color: #262626; /* Instagram-like dark text */
+    color: #475569; /* Instagram-like dark text */
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -73,8 +87,8 @@ body {
 }
 
 .nav-list a:hover {
-    background-color: #D4B28C; /* Darker Gold Sand on hover */
-    color: white;
+    background-color: #cbd5e1;
+    color: #1e293b;
 }
 
 .nav-list a img {
@@ -82,6 +96,7 @@ body {
     margin-right: 15px;
 }
 
+/* Logout */
 .logout {
     margin-top: auto;
     text-decoration: none;
@@ -92,7 +107,7 @@ body {
     border-radius: 10px;
     transition: background-color 0.3s ease, color 0.3s ease;
     width: 100%;
-    color: #262626;
+    color: #475569;
 }
 
 .logout img {
@@ -106,19 +121,12 @@ body {
 }
 
 .logout:hover {
-    background-color: #D4B28C; /* Darker hover effect for logout */
+    background-color: #f87171; 
+    color: #ffffff;
 }
 
 .logout:hover a {
-    background-color: #D4B28C; /* Darker hover effect for logout */
-    color: white;
-}
-
-.content {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background-color: #FFF;
+    color: #1e293b;
 }
 
 /* Post Layout */
@@ -281,7 +289,7 @@ body {
     padding: 8px 0;
 }
 
-/* User Item Styling */
+/* User Search Result */
 .user-item {
     display: flex;
     align-items: center;

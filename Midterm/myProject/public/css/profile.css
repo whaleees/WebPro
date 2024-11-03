@@ -2,13 +2,13 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
 /* Basic layout */
 body {
-    font-family: Arial, sans-serif;
     background-color: #FAFAFA;
-    color: black;
+    color: #333;
     margin: 0;
     display: flex;
     height: 100vh;
@@ -21,7 +21,7 @@ body {
 
 .sidebar {
     width: 250px;
-    background-color: #E6C49F; /* Gold Sand Color */
+    background-color: #f0f2f5; 
     height: 100vh;
     padding: 20px;
     display: flex;
@@ -51,7 +51,7 @@ body {
 }
 
 .nav-list a {
-    color: #262626; /* Instagram-like dark text */
+    color: #555; /* Instagram-like dark text */
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -63,8 +63,8 @@ body {
 }
 
 .nav-list a:hover {
-    background-color: #D4B28C; /* Darker Gold Sand on hover */
-    color: white;
+    background-color: #d9e2ec; /* Darker Gold Sand on hover */
+    color: #333;
 }
 
 .nav-list a img {
@@ -82,7 +82,7 @@ body {
     border-radius: 10px;
     transition: background-color 0.3s ease, color 0.3s ease;
     width: 100%;
-    color: #262626;
+    color: #555;
 }
 
 .logout img {
@@ -96,12 +96,12 @@ body {
 }
 
 .logout:hover {
-    background-color: #D4B28C; /* Darker hover effect for logout */
+    background-color: #f87171;
+    color: #ffffff;
 }
 
 .logout:hover a {
-    background-color: #D4B28C; /* Darker hover effect for logout */
-    color: white;
+    color: #1e293b;
 }
 
 /* Main profile content */
@@ -139,12 +139,13 @@ body {
 
 .profile-username h2 {
     font-size: 24px;
+    color: #333;
 }
 
 .edit-profile-btn {
     padding: 5px 10px;
     border: none;
-    background-color: #262626;
+    background-color: #555;
     color: white;
     border-radius: 5px;
     cursor: pointer;
@@ -177,13 +178,14 @@ body {
 .nav-btn {
     background: none;
     border: none;
-    color: black;
+    color: #555;
     font-size: 14px;
     cursor: pointer;
+    margin: 0 15px;
 }
 
 .nav-btn:hover {
-    color: #262626;
+    color: #333;
 }
 
 /* Posts grid */
@@ -199,6 +201,8 @@ body {
     position: relative;
     overflow: hidden;
     border-radius: 8px;
+    background-color: #FFF;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* Post thumbnail size to make sure the images are uniform */
@@ -275,7 +279,7 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 10px;
-    background-color: #F9F9F9;
+    background-color: #f1f3f5;
     border-radius: 5px;
 }
 
@@ -332,7 +336,7 @@ body {
 }
 
 .user-info a {
-    color: #262626;
+    color: #555;
     font-weight: bold;
     text-decoration: none;
 }

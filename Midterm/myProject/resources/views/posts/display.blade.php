@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ asset('/css/display-posts.css') }}">
     <script defer src="{{ asset('/js/main-post.js') }}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <title>All Posts</title>
 </head>
 <body>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('/css/styles.css') }}">
     <script defer src="{{ asset('/js/main-home.js') }}"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -72,8 +73,8 @@
                                 <img src="/icons/comment.svg" alt="Comment Icon" class="icon comment-button" data-post-id="{{ $post->id }}" id="comment-icon-{{ $post->id }}">
                             </div>
                              
-                            <p><a href="{{ route('people.profile', ['username' => $post->user->name]) }}">{{ $post->user->name }}</a> {{ $post->content }}</p>
                             <p><span id="like-count-{{ $post->id }}">{{ $post->likes_count ?? 0 }}</span> likes</p>
+                            <p><a href="{{ route('people.profile', ['username' => $post->user->name]) }}">{{ $post->user->name }}</a> {{ $post->content }}</p>
                             <!-- <div class="comment" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')"><p>View all <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> comments</p></div> -->
 
                             <div class="comment" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')">
