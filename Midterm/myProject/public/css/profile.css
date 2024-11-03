@@ -523,3 +523,54 @@ body {
 .modal-comment-form button:hover {
     background-color: #007bb5;
 }
+
+.grid-item {
+    position: relative;
+    cursor: pointer;
+}
+
+.post-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.post-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 16px;
+}
+
+.grid-item:hover .post-overlay {
+    opacity: 1; /* Show overlay on hover */
+}
+
+.post-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.like-icon, .comment-icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+}
+
+.like-icon img, .comment-icon img {
+    width: 20px;
+    height: 20px;
+}
+

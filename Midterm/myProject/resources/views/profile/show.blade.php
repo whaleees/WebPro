@@ -6,6 +6,7 @@
     <title>Profile - Instagram Clone</title>
     <link rel="stylesheet" href="{{ asset('/css/profile.css') }}">
     <script defer src="{{ asset('/js/main-profile.js') }}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <div class="container">
@@ -75,7 +76,7 @@
                 @foreach($user->posts as $post)
                     <div class="post" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')">
                         <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}" class="post-thumbnail">
-                        <div class="post-overlay">
+                        <div class="post-overlay" data-post-id="{{ $post->id }}">
                             <div class="post-info">
                                 <span class="like-icon"><img src="/icons/like2.svg" alt="Likes"> {{ $post->likes_count }}</span>
                                 <span class="comment-icon"><img src="/icons/comment2.svg" alt="Comments"> {{ $post->comments_count }}</span>
@@ -108,7 +109,8 @@
                 <p id="modalLikes" class="modal-likes"></p>
                 <div id="modalComments" class="modal-comments"></div>
                 <form id="modalCommentForm" class="modal-comment-form">
-                    <input type="text" placeholder="Add a comment..." id="modalCommentInput">
+                    @csrf
+                    <input type="text" placeholder="Add a comment..." name="content" class="modal-comment-input" data-post-id="">
                     <button type="submit">Post</button>
                 </form>
                 </div>

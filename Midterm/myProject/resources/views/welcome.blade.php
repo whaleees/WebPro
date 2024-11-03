@@ -114,7 +114,8 @@
                     <p id="modalLikes" class="modal-likes"></p>
                     <div id="modalComments" class="modal-comments"></div>
                     <form id="modalCommentForm" class="modal-comment-form">
-                        <input type="text" placeholder="Add a comment..." id="modalCommentInput">
+                        @csrf
+                        <input type="text" placeholder="Add a comment..." name="content" class="modal-comment-input" data-post-id="">
                         <button type="submit">Post</button>
                     </form>
                     </div>

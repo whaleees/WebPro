@@ -104,26 +104,44 @@ class PostsController extends Controller
     }
 
     // Add a comment to a specific post
-    public function addComment(Request $request, Posts $post)
-    {
-        $request->validate([
-            'content' => 'required|string|max:255',
-        ]);
-    
+    public function addComment(Request $request, Posts $post){
         $comment = $post->comments()->create([
             'user_id' => Auth::id(),
-            'content' => $request->input('content'),
+            'content' => $request->content,
             $post->increment('comments_count')
         ]);
-    
+
         return response()->json([
-            'comments_count' => $post->comments()->count(),
-            'new_comment' => [
-                'user' => ['name' => $comment->user->name],
-                'content' => $comment->content,
-            ]
+            'success' => true,
+            'user' => $comment->user,
+            'content' => $comment->content,
+            'comments_count' => $post->comments()->count()
         ]);
     }
+
+    
+
+        // Add a comment to a specific post
+        // public function addComment(Request $request, Posts $post)
+        // {
+        //     $request->validate([
+        //         'content' => 'required|string|max:255',
+        //     ]);
+        
+        //     $comment = $post->comments()->create([
+        //         'user_id' => Auth::id(),
+        //         'content' => $request->input('content'),
+        //         $post->increment('comments_count')
+        //     ]);
+        
+        //     return response()->json([
+        //         'comments_count' => $post->comments()->count(),
+        //         'new_comment' => [
+        //             'user' => ['name' => $comment->user->name],
+        //             'content' => $comment->content,
+        //         ]
+        //     ]);
+        // }
     
     public function showJson($id)
     {

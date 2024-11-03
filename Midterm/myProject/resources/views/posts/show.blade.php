@@ -51,7 +51,13 @@
                             <a href="{{ route('posts.show', ['id' => $post->id]) }}">
                                 <img src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}">
                             </a>
-                        </div>
+
+                            <div class="post-overlay" data-post-id="{{ $post->id }}">
+                                <div class="post-info">
+                                    <span class="like-icon"><img src="/icons/like2.svg" alt="Likes"> {{ $post->likes_count }}</span>
+                                    <span class="comment-icon"><img src="/icons/comment2.svg" alt="Comments"> {{ $post->comments_count }}</span>
+                                </div>
+                            </div>
                     @endif
                     
                     <!-- <div class="post-content">{{ $post->content }}</div> -->
@@ -108,7 +114,8 @@
             <p id="modalLikes" class="modal-likes"></p>
             <div id="modalComments" class="modal-comments"></div>
             <form id="modalCommentForm" class="modal-comment-form">
-                <input type="text" placeholder="Add a comment..." id="modalCommentInput">
+                @csrf
+                <input type="text" placeholder="Add a comment..." name="content" class="modal-comment-input" data-post-id="">
                 <button type="submit">Post</button>
             </form>
             </div>

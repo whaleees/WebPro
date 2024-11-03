@@ -67,18 +67,30 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.json())
         .then(data => {
-            // Update the likes count
+            // Update the likes count in the main feed
             const likeCountElement = document.querySelector(`#like-count-${postId}`);
             if (likeCountElement) {
                 likeCountElement.textContent = `${data.likes_count}`;
             }
 
-            // Optionally add a visual feedback like a quick animation (optional)
+            // Update the like count in the modal if it's open and showing the same post
+            const modalImage = document.getElementById("modalImage");
+            const modalPostId = modalImage.getAttribute('data-post-id');
+            if (modalPostId === postId.toString()) {
+                const modalLikeCountElement = document.getElementById("modalLikes");
+                if (modalLikeCountElement) {
+                    modalLikeCountElement.textContent = `${data.likes_count} likes`;
+                }
+            }
+
+            // Add a quick animation to show the like action visually (optional)
             const image = document.querySelector(`.likeable-image[data-post-id="${postId}"]`);
-            image.classList.add('liked-animation');
-            setTimeout(() => {
-                image.classList.remove('liked-animation');
-            }, 500);
+            if (image) {
+                image.classList.add('liked-animation');
+                setTimeout(() => {
+                    image.classList.remove('liked-animation');
+                }, 500);
+            }
 
             // Toggle like icon state
             const likeIcon = document.querySelector(`#like-icon-${postId}`);
@@ -213,33 +225,117 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
     
-        function openModal(postId) {
-            console.log("Opening modal for post", postId);
-            fetch(`/posts/${postId}/json`)
-                .then(response => response.json())
-                .then(data => {
-                    // Populate modal with data
-                    // console.log(data.user.name);
-                    document.getElementById("modalImage").src = `/storage/${data.image}`;
-                    document.getElementById("modalUserName").textContent = data.user.name;
-                    document.getElementById("modalUserNameLink").href = `/profile/${data.user.name}`;
-                    document.getElementById("modalCaption").textContent = data.caption;
-                    document.getElementById("modalLikes").textContent = `${data.likes_count} likes`;
+// Open modal when post image is clicked
+function openModal(postId) {
+    console.log("Opening modal for post", postId);
     
-            
+    fetch(`/posts/${postId}/json`)
+        .then(response => response.json())
+        .then(data => {
+            // Populate modal with data
+            document.getElementById("modalImage").src = `/storage/${data.image}`;
+            document.getElementById("modalImage").setAttribute("data-post-id", postId); //add this
+            document.getElementById("modalUserName").textContent = data.user.name;
+            document.getElementById("modalUserNameLink").href = `/profile/${data.user.name}`;
+            document.getElementById("modalCaption").textContent = data.caption;
+            document.getElementById("modalLikes").textContent = `${data.likes_count} likes`;
+
+            const modalImage = document.getElementById("modalImage");
+            modalImage.removeEventListener("dblclick", handleImageDoubleClick);
+            modalImage.addEventListener("dblclick", handleImageDoubleClick);
+
+            // Set form action dynamically
+            const form = document.getElementById("modalCommentForm");
+            form.action = `/posts/${postId}/comments`;
+            const commentInput = document.querySelector('.modal-comment-input');
+            commentInput.setAttribute('data-post-id', postId);
+
+            // Populate comments
+            const modalComments = document.getElementById("modalComments");
+            modalComments.innerHTML = ""; // Clear previous comments
+            data.comments.forEach(comment => {
+                const commentElement = document.createElement("p");
+                const userLink = document.createElement("a");
+                userLink.href = `/profile/${comment.user.name}`;
+                userLink.textContent = comment.user.name;
+                userLink.style.textDecoration = "none";
+                userLink.style.fontWeight = "bold";
+                userLink.style.color = "black";
+
+                commentElement.appendChild(userLink);
+                commentElement.appendChild(document.createTextNode(`: ${comment.content}`));
+
+                modalComments.appendChild(commentElement);
+            });
+
+            // Display modal
+            document.getElementById("postModal").style.display = "flex";
+        })
+        .catch(error => console.error("Error loading post data:", error));
+}
+
+document.querySelector('.modal-comment-input').addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault(); // Prevent default "Enter" behavior (e.g., adding a new line)
+        document.getElementById("modalCommentForm").dispatchEvent(new Event('submit')); // Trigger form submission
+    }
+});
+
+// Handle comment submission via AJAX
+document.getElementById("modalCommentForm").addEventListener("submit", function(event) {
+    console.log("Input comment triggered");
+    event.preventDefault(); // Prevent form reload
+
+    // Get the comment content and post ID
+    const postId = document.querySelector('.modal-comment-input').getAttribute('data-post-id');
+    const commentContent = event.target.querySelector('.modal-comment-input').value;
+
+    console.log("Comment Content:", commentContent);
+    console.log("Post ID:", postId);
+
+    if (!commentContent) {
+        console.warn("Comment content is empty");
+        return;
+    }
+
+    // Send the comment via AJAX
+    fetch(`/posts/${postId}/comments`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({
+            content: commentContent
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Raw response data:", data);
         
-                    // Populate comments
-                    const modalComments = document.getElementById("modalComments");
-                    modalComments.innerHTML = ""; // Clear previous comments
-                    data.comments.forEach(comment => {
-                        const commentElement = document.createElement("p");
-                        commentElement.textContent = `${comment.user.name}: ${comment.content}`;
-                        modalComments.appendChild(commentElement);
-                    });
-        
-                    // Display modal
-                    document.getElementById("postModal").style.display = "flex";
-                })
-                .catch(error => console.error("Error loading post data:", error));
+        if (data.success) {
+            // Clear the input field
+            event.target.querySelector('.modal-comment-input').value = '';
+
+            // Append the new comment to the comments section in the modal
+            const modalComments = document.getElementById("modalComments");
+            const newComment = document.createElement("p");
+            newComment.innerHTML = `<strong>${data.user.name}</strong>: ${commentContent}`;
+            modalComments.appendChild(newComment);
+
+            const commentCountElement = document.getElementById(`comment-count-${postId}`);
+            let currentCount = parseInt(commentCountElement.textContent, 10);
+            commentCountElement.textContent = currentCount + 1;
+
+            console.log("Comment added dynamically.");
+        } else {
+            console.error("Failed to add comment:", data.message);
         }
+    })
+    .catch(error => console.error("Error:", error));
+});
+
+        
+
+        
 });
