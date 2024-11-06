@@ -8,7 +8,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
-
+use Symfony\Component\HttpKernel\Profiler\Profile;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -45,13 +45,19 @@ Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('peo
 
 Route::post('/like-post', [PostsController::class, 'likePost'])->name('like.post');
 Route::get('/comments/{postId}', [PostsController::class, 'getComments'])->name('get.comments');
-Route::get('/search-users', [HomeController::class, 'searchUsers']);
-Route::get('/search-users', [PostsController::class, 'searchUsers']);
-Route::get('/search-users', [ProfileController::class, 'searchUsers']);
+Route::get('/search-users', [SearchController::class, 'searchUsers']);
 
 Route::post('/posts/{post}/like', [PostsController::class, 'addLike'])->name('posts.like')->middleware('auth');
 Route::post('/posts/{post}/comments', [PostsController::class, 'addComment'])->name('posts.comment')->middleware('auth');
 Route::get('/posts/{id}/json', [PostsController::class, 'showJson'])->name('posts.showJson');
+
+Route::get('/get-search-history', [SearchController::class, 'getSearchHistory']);
+Route::post('/add-search-history', [SearchController::class, 'addSearchHistory']);
+Route::delete('/clear-search-history', [SearchController::class, 'clearSearchHistory']);
+Route::delete('/delete-search-history-item/{id}', [SearchController::class, 'deleteSearchHistoryItem']);
+Route::post('/profile/updateProfilePicture', [ProfileController::class, 'updateProfilePicture'])->middleware('auth');
+
+
 
 
 

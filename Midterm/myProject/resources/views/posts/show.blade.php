@@ -10,33 +10,50 @@
     <title>All Posts</title>
 </head>
 <body>
-<nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <!-- Navigation items -->
             <ul class="nav-list">
-                <li><a href="{{ route('home') }}"><img src="/icons/home.svg" alt="Home Icon">Home</a></li>
+                <li><a href="{{ route('home') }}"><img class="logo" id="logo" src="/icons/home.svg" alt="Home Icon"><span>Home</span></a></li>
                 <li id="search-btn">
-                    <a href="javascript:void(0);"><img src="/icons/search.svg" alt="Search Icon">Search</a>
+                    <a href="javascript:void(0);"><img src="/icons/search.svg" alt="Search Icon"><span>Search</span></a>
                 </li>
-                <li><a href="{{ route('posts.display') }}"><img src="/icons/explore.svg" alt="Explore Icon">Explore</a></li>
-                <li><a href="{{ route('posts.create') }}"><img src="/icons/create.svg" alt="Create Icon">Create</a></li>
-                <li><a href="{{ route("profile.show") }}"><img src="/icons/profile.svg" alt="Profile Icon">Profile</a></li>
+                <li><a href="{{ route('posts.display') }}"><img class="logo" id="logo" src="/icons/explore.svg" alt="Explore Icon"><span>Explore</span></a></li>
+                <li><a href="{{ route('posts.create') }}"><img class="logo" id="logo" src="/icons/create.svg" alt="Create Icon"><span>Create</span></a></li>
+                <li><a href="{{ route("profile.show") }}"><img class="logo" id="logo" src="/icons/profile.svg" alt="Profile Icon"><span>Profile</span></a></li>
             </ul>
-        <!-- Logout Button -->
-        <div class="logout">
-            <a href="{{ route('logout') }}"><img src="/icons/logout.svg" alt="Logout Icon">Logout</a>
-        </div>
 
-        <!-- Hidden search bar initially -->
-        <div id="search-bar" class="search-container" style="display: none;">
-                <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Search for users, tags, etc.">
-                    <button id="close-search">✖</button>
+            <!-- Logout Button -->
+            <div class="logout">
+                <a href="{{ route('logout') }}"><img class="logo" id="logo" src="/icons/logout.svg" alt="Logout Icon"><span>Logout</span></a>
+            </div>
+
+           <!-- Slide-out Search Popup -->
+           <div id="search-popup" class="search-popup">
+                <div class="search-header">
+                    <h2>Search</h2>
+                    <button id="close-search">X</button>
                 </div>
+
+                <input type="text" id="search-input" placeholder="Search..."/>
+                
+                <!-- Search Results/History Container -->
                 <div id="search-results" class="search-results">
-                    <!-- User list will be dynamically populated here by JavaScript -->
+                    <!-- Dynamically populated search results or history items will go here -->
+                    <ul id="user-results-list">
+                        <!-- Recent searches will be appended here dynamically -->
+                    </ul>
+                </div>
+
+                <!-- Search History Section -->
+                <div class="search-history">
+                    <h3 id="recent-label">Recent</h3>
+                    <ul id="history-list">
+                        <!-- Recent searches will be appended here dynamically -->
+                    </ul>
+                    <button id="clear-history">Clear all</button>
                 </div>
             </div>
-    </nav>
+        </nav>
 
     <div class="content">
         @if ($posts->isEmpty())

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -16,24 +18,31 @@ class ProfileController extends Controller
         return view('profile.show', compact('user'));
     }
 
-    public function searchUsers(Request $request)
-    {
-        $query = $request->input('query');
-    
-        // Search for users by name or email
-        $users = User::where('name', 'LIKE', "%{$query}%")
-                     ->orWhere('email', 'LIKE', "%{$query}%")
-                     ->get()
-                     ->map(function ($user) {
-                         return [
-                             'name' => $user->name,
-                             'email' => $user->email,
-                             'profile_image' => $user->profile_image ?? 'default-avatar.png',
-                             'username' => $user->name, // Use 'username' if you have this field in the database
-                         ];
-                     });
-    
-        // Return only user results in the JSON response
-        return response()->json($users);
+    public function updateProfilePicture(Request $request){
+        $request->validate([
+            'profile_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Fetch the user directly
+        $user = User::find(Auth::id());
+        // $user = Auth::user();
+
+        // Check if the user is found and valid
+        if ($user) {
+            // Delete the old profile picture if it exists and isn't the default avatar
+            if ($user->profile_image && $user->profile_image !== 'default-avatar.png') {
+                Storage::disk('public')->delete('avatars' . $user->profile_image);
+            }
+
+            // Store the new profile picture
+            $path = $request->file('profile_image')->store('avatars', 'public');
+            $user->profile_image = basename($path);
+            $user->save();
+
+            return response()->json(['success' => true, 'message' => 'Profile picture updated successfully!']);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Profile picture updated successfully!']);
     }
+
 }

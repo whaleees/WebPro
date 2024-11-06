@@ -53,26 +53,6 @@ class PostsController extends Controller
         return view('posts.show', compact('post'));
     }
 
-    // Search for users based on query input
-    public function searchUsers(Request $request)
-    {
-        $query = $request->input('query');
-
-        $users = User::where('name', 'LIKE', "%{$query}%")
-                     ->orWhere('email', 'LIKE', "%{$query}%")
-                     ->get()
-                     ->map(function ($user) {
-                         return [
-                             'name' => $user->name,
-                             'email' => $user->email,
-                             'profile_image' => $user->profile_image ?? 'default-avatar.png',
-                             'username' => $user->name,
-                         ];
-                     });
-
-        return response()->json($users);
-    }
-
     // Get comments for a specific post
     public function getComments($postId)
     {
@@ -119,30 +99,6 @@ class PostsController extends Controller
         ]);
     }
 
-    
-
-        // Add a comment to a specific post
-        // public function addComment(Request $request, Posts $post)
-        // {
-        //     $request->validate([
-        //         'content' => 'required|string|max:255',
-        //     ]);
-        
-        //     $comment = $post->comments()->create([
-        //         'user_id' => Auth::id(),
-        //         'content' => $request->input('content'),
-        //         $post->increment('comments_count')
-        //     ]);
-        
-        //     return response()->json([
-        //         'comments_count' => $post->comments()->count(),
-        //         'new_comment' => [
-        //             'user' => ['name' => $comment->user->name],
-        //             'content' => $comment->content,
-        //         ]
-        //     ]);
-        // }
-    
     public function showJson($id)
     {
         $post = Posts::with('user', 'comments.user')->findOrFail($id);

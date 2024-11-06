@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $table->string('profile_image')->default('default-avatar.png'); // Add a nullable profile photo column
+            $table->string('profile_image')->nullable()->default('default-avatar.png'); // Add a nullable profile photo column
         });
     }
 
