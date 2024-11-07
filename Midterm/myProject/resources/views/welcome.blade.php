@@ -85,13 +85,14 @@
                             <!-- Post Footer (Caption, Likes, and Comments) -->
                             <div class="post-footer">
                             <div class="post-icons">
-                                <img src="/icons/like.svg" alt="Like Icon" class="icon like-button" data-post-id="{{ $post->id }}" id="like-icon-{{ $post->id }}">
-                                <img src="/icons/comment.svg" alt="Comment Icon" class="icon comment-button" data-post-id="{{ $post->id }}" id="comment-icon-{{ $post->id }}">
+                                <img src="{{ $post->is_liked ? '/icons/like2.svg' : '/icons/like.svg' }}" alt="Like Icon" data-liked-image="/icons/like2.svg" 
+                                    data-unliked-image="/icons/like.svg" class="icon like-button like-icon" 
+                                    data-post-id="{{ $post->id }}" id="like-icon-{{ $post->id }}">
+                                <img src="/icons/comment.svg" alt="Comment Icon" class="icon comment-button" data-post-id="{{ $post->id }}">
                             </div>
-                             
-                            <p><span id="like-count-{{ $post->id }}">{{ $post->likes_count ?? 0 }}</span> likes</p>
+
+                        <p><span class="like-count" data-post-id="{{ $post->id }}">{{ $post->likes_count ?? 0 }}</span> likes</p>
                             <p><a href="{{ route('people.profile', ['username' => $post->user->name]) }}">{{ $post->user->name }}</a> {{ $post->content }}</p>
-                            <!-- <div class="comment" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')"><p>View all <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> comments</p></div> -->
 
                             <div class="comment" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')">
                                 <p>View all <span id="comment-count-{{ $post->id }}">{{ $post->comments->count() }}</span> comments</p>
@@ -116,12 +117,12 @@
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <div class="modal-left">
-                    <img id="modalImage" src="" alt="Post Image">
+                    <img id="modalImage" src="" alt="Post Image" class="modalImage">
                 </div>
                 <div class="modal-right">
                     <div class="post-details">
                         <div class="post-user">
-                            <img src="{{ asset('storage/avatars/' . ($post->user->profile_image ?? 'default-avatar.png')) }}" alt="Profile Image" class="user-avatar-modal">
+                            <img id="modalUserProfileImage" src="" alt="Profile Image" class="user-avatar-modal">
                             <a href="#" id="modalUserNameLink">
                                 <span id="modalUserName"></span>
                             </a>
@@ -129,6 +130,11 @@
                     </div>
                     <p id="modalCaption" class="modal-caption"></p>
                     <p id="modalLikes" class="modal-likes"></p>
+                    <div class="post-icons-modal">
+                        <img alt="Like Icon" data-liked-image="/icons/like2.svg" 
+                            id="modalLikeButton" data-unliked-image="/icons/like.svg" class="modal-icon-like-button like-icon">
+                        <img src="/icons/comment.svg" alt="Comment Icon" class="modal-icon-comment-button">
+                    </div>
                     <div id="modalComments" class="modal-comments"></div>
                     <form id="modalCommentForm" class="modal-comment-form">
                         @csrf

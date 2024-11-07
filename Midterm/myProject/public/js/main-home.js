@@ -5,13 +5,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentPage = window.location.pathname.split('/').pop();
     
     const recentLabel = document.getElementById('recent-label');
-const clearHistoryButton = document.getElementById('clear-history');
+    const clearHistoryButton = document.getElementById('clear-history');
     const searchPopup = document.getElementById('search-popup');
     const searchButton = document.getElementById('search-btn');
     const closeSearchButton = document.getElementById('close-search');
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('user-results-list');
     const historyList = document.getElementById('history-list');
+    const modalImage = document.querySelectorAll('.modalImage');
+
+    modalImage.forEach(button => button.addEventListener('dblclick', handleImageDoubleClick));
+    
+    // Attach event listener once on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const modalLikeIcon = document.getElementById("modal-like-icon");
+        const modalImage = document.getElementById("modalImage");
+
+        if (modalLikeIcon) {
+            modalLikeIcon.addEventListener('click', () => handleLikeButtonClick(modalLikeIcon));
+        }
+        if (modalImage) {
+            modalImage.addEventListener('dblclick', handleImageDoubleClick);
+        }
+    });
 
     // Attach event listeners
     likeButtons.forEach(button => button.addEventListener('click', handleLikeButtonClick));
@@ -24,9 +40,6 @@ const clearHistoryButton = document.getElementById('clear-history');
             }
         });
     });
-    likeableImages.forEach(image => {
-        image.addEventListener('dblclick', handleImageDoubleClick);
-    });
 
     document.querySelectorAll('.nav-list li').forEach(item => {
         const page = item.getAttribute('data-page');
@@ -37,38 +50,26 @@ const clearHistoryButton = document.getElementById('clear-history');
         }
     });
 
-    // Like button click handler
+    // Like button click handler (for both main feed and modal)
     function handleLikeButtonClick() {
-        // console.log("Like button clicked!!!!");
         const postId = this.getAttribute('data-post-id');
-        fetch(`/posts/${postId}/like`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // console.log(data);
-            // Update the likes count
-            document.querySelector(`#like-count-${postId}`).textContent = `${data.likes_count}`;
-            // Toggle 'liked' class for styling
-            if (data.liked) {
-                this.classList.add('liked');
-            } else {
-                this.classList.remove('liked');
-            }
-        })
-        .catch(error => console.error('Error:', error));
+        likePost(postId, this); // Pass the clicked element to handle animation and icon update
     }
 
+    // Double-click like handler for the modal image
     function handleImageDoubleClick(event) {
         const postId = event.target.getAttribute('data-post-id');
-        likePost(postId);  // Call the like function with the post ID
+        likePost(postId); // Trigger the like function with postId
     }
 
-    function likePost(postId) {
+    // Main function to handle like action
+    function likePost(postId, likeIconElement = null) {
+        const likeIcon = likeIconElement || document.querySelector(`#like-icon-${postId}`);
+        
+        if (likeIcon) {
+            triggerLikeAnimation(likeIcon);
+        }
+
         fetch(`/posts/${postId}/like`, {
             method: 'POST',
             headers: {
@@ -78,39 +79,53 @@ const clearHistoryButton = document.getElementById('clear-history');
         })
         .then(response => response.json())
         .then(data => {
-            // Update the likes count in the main feed
-            const likeCountElement = document.querySelector(`#like-count-${postId}`);
-            if (likeCountElement) {
-                likeCountElement.textContent = `${data.likes_count}`;
-            }
+            // Update all like counts across the main feed
+            document.querySelectorAll(`.like-count[data-post-id="${postId}"]`).forEach(countElement => {
+                countElement.textContent = `${data.likes_count} `;
+            });
 
             // Update the like count in the modal if it's open and showing the same post
             const modalImage = document.getElementById("modalImage");
             const modalPostId = modalImage.getAttribute('data-post-id');
             if (modalPostId === postId.toString()) {
                 const modalLikeCountElement = document.getElementById("modalLikes");
+                const modalLikeIcon = document.getElementById("modal-like-icon");
                 if (modalLikeCountElement) {
                     modalLikeCountElement.textContent = `${data.likes_count} likes`;
                 }
+
+                if (modalLikeIcon) {
+                    modalLikeIcon.classList.toggle('liked', data.liked);
+                    modalLikeIcon.src = data.liked ? modalLikeIcon.getAttribute('data-liked-image') : modalLikeIcon.getAttribute('data-unliked-image');
+                }
             }
 
-            // Add a quick animation to show the like action visually (optional)
-            const image = document.querySelector(`.likeable-image[data-post-id="${postId}"]`);
-            if (image) {
-                image.classList.add('liked-animation');
-                setTimeout(() => {
-                    image.classList.remove('liked-animation');
-                }, 500);
-            }
-
-            // Toggle like icon state
-            const likeIcon = document.querySelector(`#like-icon-${postId}`);
-            if (likeIcon) {
-                likeIcon.classList.toggle('liked');
-            }
+            // Update the like icon state in both main feed and modal
+            document.querySelectorAll(`.like-icon[data-post-id="${postId}"]`).forEach(icon => {
+                icon.classList.toggle('liked', data.liked);
+                icon.src = data.liked ? icon.getAttribute('data-liked-image') : icon.getAttribute('data-unliked-image');
+            });
         })
         .catch(error => console.error('Error:', error));
     }
+
+
+    // Helper function to add the heart pop animation
+    function triggerLikeAnimation(iconElement) {
+        iconElement.classList.add('heart-pop-animation');
+        setTimeout(() => {
+            iconElement.classList.remove('heart-pop-animation');
+        }, 400); // Match to CSS animation duration
+    }
+
+    // Attach event listeners for like buttons and double-click on modal image
+    document.querySelectorAll('.like-button, .modal-icon-like-button').forEach(button => {
+        button.addEventListener('click', handleLikeButtonClick);
+    });
+
+    document.querySelectorAll('.likeable-image').forEach(image => {
+        image.addEventListener('dblclick', handleImageDoubleClick);
+    });
 
     // Comment button click handler
     function handleCommentButtonClick() {
@@ -187,16 +202,25 @@ const clearHistoryButton = document.getElementById('clear-history');
                 document.getElementById("modalUserNameLink").href = `/profile/${data.user.name}`;
                 document.getElementById("modalCaption").textContent = data.caption;
                 document.getElementById("modalLikes").textContent = `${data.likes_count} likes`;
+                document.getElementById("modalUserProfileImage").src = `/storage/avatars/${data.user.avatar ?? 'default-avatar.png'}`;
 
-                const modalImage = document.getElementById("modalImage");
-                modalImage.removeEventListener("dblclick", handleImageDoubleClick);
-                modalImage.addEventListener("dblclick", handleImageDoubleClick);
-
+                
+                const modalLikeButton = document.getElementById("modalLikeButton");
+                // const modalLikeButton = document.querySelector('.modal-icon-like-button');
+                modalLikeButton.src = data.is_liked ? '/icons/like2.svg' : '/icons/like.svg';
+                modalLikeButton.setAttribute("data-post-id", postId); // Set the correct postId for the button
+                
+                modalLikeButton.addEventListener("click", handleLikeButtonClick);         
+                
                 // Set form action dynamically
+                const modalCommentButton = document.querySelector(".modal-icon-comment-button");
                 const form = document.getElementById("modalCommentForm");
                 form.action = `/posts/${postId}/comments`;
                 const commentInput = document.querySelector('.modal-comment-input');
                 commentInput.setAttribute('data-post-id', postId);
+                modalCommentButton.addEventListener("click", function() {
+                    commentInput.focus();
+                });
 
                 // Populate comments
                 const modalComments = document.getElementById("modalComments");

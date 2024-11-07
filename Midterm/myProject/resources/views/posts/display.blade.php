@@ -61,7 +61,7 @@
         @else
             <div class="grid">
                 @foreach ($posts as $post)
-                <div class="grid-item" data-post-id="{{ $post->id }}" onclick="openModal('{{ $post->id }}')">
+                <div class="grid-item" data-post-id="{{ $post->id }}">
                     
                     @if($post->image)
                         <div class="post-image">
@@ -85,33 +85,38 @@
         @endif
     </div>
 
-    <!-- Modal for post details -->
-    <div class="modal" id="postModal" style="display:none;">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="modal-left">
-                <img id="modalImage" src="" alt="Post Image">
-            </div>
-            <div class="modal-right">
-                <div class="post-details">
-                    <div class="post-user">
-                        <img src="{{ asset('/storage/avatars/' . ($user->profile_image ?? 'default-avatar.png')) }}" alt="Profile Image" class="user-avatar-modal">
-                        <a href="#" id="modalUserNameLink">
-                            <span id="modalUserName"></span>
-                        </a>
-                    </div>
+        <!-- Modal for post details -->
+        <div class="modal" id="postModal" style="display:none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div class="modal-left">
+                    <img id="modalImage" src="" alt="Post Image" class="modalImage">
                 </div>
-                <p id="modalCaption" class="modal-caption"></p>
-                <p id="modalLikes" class="modal-likes"></p>
-                <div id="modalComments" class="modal-comments"></div>
-                <form id="modalCommentForm" class="modal-comment-form">
-                    @csrf
-                    <input type="text" placeholder="Add a comment..." name="content" class="modal-comment-input" data-post-id="">
-                    <button type="submit">Post</button>
-                </form>
+                <div class="modal-right">
+                    <div class="post-details">
+                        <div class="post-user">
+                            <img id="modalUserProfileImage" src="" alt="Profile Image" class="user-avatar-modal">
+                            <a href="#" id="modalUserNameLink">
+                                <span id="modalUserName"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <p id="modalCaption" class="modal-caption"></p>
+                    <p id="modalLikes" class="modal-likes"></p>
+                    <div class="post-icons-modal">
+                        <img alt="Like Icon" data-liked-image="/icons/like2.svg" 
+                            id="modalLikeButton" data-unliked-image="/icons/like.svg" class="modal-icon-like-button like-icon">
+                        <img src="/icons/comment.svg" alt="Comment Icon" class="modal-icon-comment-button">
+                    </div>
+                    <div id="modalComments" class="modal-comments"></div>
+                    <form id="modalCommentForm" class="modal-comment-form">
+                        @csrf
+                        <input type="text" placeholder="Add a comment..." name="content" class="modal-comment-input" data-post-id="">
+                        <button type="submit">Post</button>
+                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </body>
 </html>

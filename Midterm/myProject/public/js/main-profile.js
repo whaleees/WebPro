@@ -7,9 +7,22 @@ document.addEventListener("DOMContentLoaded", function() {
     const historyList = document.getElementById('history-list');
     const recentLabel = document.getElementById('recent-label');
     const clearHistoryButton = document.getElementById('clear-history');
-
-    const updateProfilePictureUrl = "{{ route('updateProfilePicture') }}";
+    // modalImage.forEach(button => button.addEventListener('dblclick', handleImageDoubleClick));
     
+    // // Attach event listener once on page load
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const modalLikeIcon = document.getElementById("modal-like-icon");
+    //     const modalImage = document.getElementById("modalImage");
+
+    //     if (modalLikeIcon) {
+    //         modalLikeIcon.addEventListener('click', () => handleLikeButtonClick(modalLikeIcon));
+    //     }
+    //     if (modalImage) {
+    //         modalImage.addEventListener('dblclick', handleImageDoubleClick);
+    //     }
+    // });
+    
+
     let cropper;
     let selectedImage;
 
@@ -101,8 +114,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
 
-    // Open modal when post image is clicked
-    function openModal(postId) {
+      // Open modal when post image is clicked
+      function openModal(postId) {
         console.log("Opening modal for post", postId);
         
         fetch(`/posts/${postId}/json`)
@@ -115,16 +128,24 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("modalUserNameLink").href = `/profile/${data.user.name}`;
                 document.getElementById("modalCaption").textContent = data.caption;
                 document.getElementById("modalLikes").textContent = `${data.likes_count} likes`;
+                document.getElementById("modalUserProfileImage").src = `/storage/avatars/${data.user.avatar ?? 'default-avatar.png'}`;
 
-                const modalImage = document.getElementById("modalImage");
-                modalImage.removeEventListener("dblclick", handleImageDoubleClick);
-                modalImage.addEventListener("dblclick", handleImageDoubleClick);
+                const modalLikeButton = document.getElementById("modalLikeButton");
+                // const modalLikeButton = document.querySelector('.modal-icon-like-button');
+                modalLikeButton.src = data.is_liked ? '/icons/like2.svg' : '/icons/like.svg';
+                modalLikeButton.setAttribute("data-post-id", postId); // Set the correct postId for the button
+    
+                modalLikeButton.addEventListener("click", handleLikeButtonClick);         
 
                 // Set form action dynamically
                 const form = document.getElementById("modalCommentForm");
                 form.action = `/posts/${postId}/comments`;
                 const commentInput = document.querySelector('.modal-comment-input');
                 commentInput.setAttribute('data-post-id', postId);
+                const modalCommentButton = document.querySelector(".modal-icon-comment-button");
+                modalCommentButton.addEventListener("click", function() {
+                    commentInput.focus();
+                });
 
                 // Populate comments
                 const modalComments = document.getElementById("modalComments");
@@ -159,22 +180,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Handle comment submission via AJAX
     document.getElementById("modalCommentForm").addEventListener("submit", function(event) {
-        console.log("Input comment triggered");
         event.preventDefault(); // Prevent form reload
 
-        // Get the comment content and post ID
         const postId = document.querySelector('.modal-comment-input').getAttribute('data-post-id');
         const commentContent = event.target.querySelector('.modal-comment-input').value;
 
-        console.log("Comment Content:", commentContent);
-        console.log("Post ID:", postId);
+        if (!commentContent) return;
 
-        if (!commentContent) {
-            console.warn("Comment content is empty");
-            return;
-        }
-
-        // Send the comment via AJAX
         fetch(`/posts/${postId}/comments`, {
             method: "POST",
             headers: {
@@ -187,8 +199,6 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Raw response data:", data);
-            
             if (data.success) {
                 // Clear the input field
                 event.target.querySelector('.modal-comment-input').value = '';
@@ -202,15 +212,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Update the comment count in the overlay
                 const overlayCommentCountElement = document.querySelector(`.post-overlay[data-post-id="${postId}"] .comment-icon`);
                 if (overlayCommentCountElement) {
-                    overlayCommentCountElement.innerHTML = `<img src="/icons/comment2.svg" alt="Comments"> ${data.comments_count}`;
+                    overlayCommentCountElement.innerHTML = `<img src="/icons/comment.svg" alt="Comments"> ${data.comments_count}`;
                 }
 
                 const commentCountElement = document.getElementById(`comment-count-${postId}`);
                 if (commentCountElement) {
                     commentCountElement.textContent = data.comments_count;
                 }
-
-                console.log("Comment added dynamically.");
             } else {
                 console.error("Failed to add comment:", data.message);
             }
@@ -218,12 +226,26 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => console.error("Error:", error));
     });
 
-    function handleImageDoubleClick(event) {
-        const postId = event.target.getAttribute('data-post-id');
-        likePost(postId);  // Call the like function with the post ID
+    // Like button click handler (for both main feed and modal)
+    function handleLikeButtonClick() {
+        const postId = this.getAttribute('data-post-id');
+        likePost(postId, this); // Pass the clicked element to handle animation and icon update
     }
 
-    function likePost(postId) {
+    // Double-click like handler for the modal image
+    function handleImageDoubleClick(event) {
+        const postId = event.target.getAttribute('data-post-id');
+        likePost(postId); // Trigger the like function with postId
+    }
+
+    // Main function to handle like action
+    function likePost(postId, likeIconElement = null) {
+        const likeIcon = likeIconElement || document.querySelector(`#like-icon-${postId}`);
+        
+        if (likeIcon) {
+            triggerLikeAnimation(likeIcon);
+        }
+
         fetch(`/posts/${postId}/like`, {
             method: 'POST',
             headers: {
@@ -233,14 +255,7 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => response.json())
         .then(data => {
-            // Update the likes count in the main feed
-            const likeCountElement = document.querySelector(`#like-count-${postId}`);
-            if (likeCountElement) {
-                likeCountElement.textContent = `${data.likes_count}`;
-            }
-
-
-            // Update the overlay like count
+            // Update the like count in the overlay
             const overlayLikeCountElement = document.querySelector(`.post-overlay[data-post-id="${postId}"] .like-icon`);
             if (overlayLikeCountElement) {
                 overlayLikeCountElement.innerHTML = `<img src="/icons/like2.svg" alt="Likes"> ${data.likes_count}`;
@@ -254,25 +269,39 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (modalLikeCountElement) {
                     modalLikeCountElement.textContent = `${data.likes_count} likes`;
                 }
+                const modalLikeIcon = document.getElementById("modalLikeButton");
+                if (modalLikeIcon) {
+                    modalLikeIcon.classList.toggle('liked', data.liked);
+                    modalLikeIcon.src = data.liked ? modalLikeIcon.getAttribute('data-liked-image') : modalLikeIcon.getAttribute('data-unliked-image');
+                }
             }
 
-            // Add a quick animation to show the like action visually (optional)
-            const image = document.querySelector(`.likeable-image[data-post-id="${postId}"]`);
-            if (image) {
-                image.classList.add('liked-animation');
-                setTimeout(() => {
-                    image.classList.remove('liked-animation');
-                }, 500);
-            }
-
-            // Toggle like icon state
-            const likeIcon = document.querySelector(`#like-icon-${postId}`);
-            if (likeIcon) {
-                likeIcon.classList.toggle('liked');
-            }
+            // Update the like icon state in both main feed and modal
+            document.querySelectorAll(`.like-icon[data-post-id="${postId}"]`).forEach(icon => {
+                icon.classList.toggle('liked', data.liked);
+                icon.src = data.liked ? icon.getAttribute('data-liked-image') : icon.getAttribute('data-unliked-image');
+            });
         })
         .catch(error => console.error('Error:', error));
     }
+
+
+    // Helper function to add the heart pop animation
+    function triggerLikeAnimation(iconElement) {
+        iconElement.classList.add('heart-pop-animation');
+        setTimeout(() => {
+            iconElement.classList.remove('heart-pop-animation');
+        }, 400); // Match to CSS animation duration
+    }
+
+    // Attach event listeners for like buttons and double-click on modal image
+    document.querySelectorAll('.like-button, .modal-icon-like-button').forEach(button => {
+        button.addEventListener('click', handleLikeButtonClick);
+    });
+
+    document.querySelectorAll('.likeable-image').forEach(image => {
+        image.addEventListener('dblclick', handleImageDoubleClick);
+    });
 
     // Open search popup
     function openSearchPopup() {

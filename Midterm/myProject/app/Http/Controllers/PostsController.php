@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Posts;
 use App\Models\User;
@@ -102,11 +102,16 @@ class PostsController extends Controller
     public function showJson($id)
     {
         $post = Posts::with('user', 'comments.user')->findOrFail($id);
+        $user = Auth::user();
 
         return response()->json([
             'image' => $post->image,
             'caption' => $post->content,
             'likes_count' => $post->likes()->count(),
+            'is_liked' => $user ? DB::table('likes')
+            ->where('user_id', $user->id)
+            ->where('post_id', $post->id)
+            ->exists() : false,
             'user' => [
                 'name' => $post->user->name,
                 'avatar' => $post->user->profile_image,
